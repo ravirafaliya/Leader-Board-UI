@@ -1,16 +1,48 @@
-import { View, Text, Image, ScrollView, StyleSheet } from "react-native";
-import React from "react";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import React, { useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { Bar } from "react-native-progress";
+import ReactNativeModal from "react-native-modal";
 
 const TopThreeDetails = () => {
   const { userData } = useLocalSearchParams();
   const user = JSON.parse(decodeURIComponent(userData)); // Convert string back to JSON
 
+  const [visible, setVisible] = useState(false);
   return (
     <ScrollView style={styles.container}>
       <View style={styles.topContainer}>
-        <Image source={{ uri: user.imageUrl }} style={styles.profileImage} />
+        <TouchableOpacity onPress={() => setVisible(true)}>
+          <Image source={{ uri: user.imageUrl }} style={styles.profileImage} />
+          <ReactNativeModal
+            isVisible={visible}
+            onBackdropPress={() => setVisible(false)}
+            animationIn={"slideInUp"}
+            animationOut={"slideOutDown"}
+            animationOutTiming={400}
+            animationInTiming={400}
+            useNativeDriver={true}
+          >
+            <View style={styles.modalContent}>
+              <Image
+                source={{ uri: user.imageUrl }}
+                style={styles.modalProfileImage}
+              />
+              <Text style={styles.modelName}>{user.name}</Text>
+              <Text style={styles.rank}>Rank: #{user.rank}</Text>
+              <TouchableOpacity onPress={() => setVisible(false)}>
+                <Text style={styles.closeButton}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </ReactNativeModal>
+        </TouchableOpacity>
         <Text style={styles.name}>{user.name}</Text>
         <Text style={styles.rank}>Rank: #{user.rank}</Text>
       </View>
@@ -128,6 +160,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#272C35",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  closeButton: {
+    fontSize: 18,
+    fontWeight: 500,
+     color: "black",
+     marginTop: 25,
+     backgroundColor: "orange",
+     padding: 10,
+     borderRadius: 10,
+     boxShadow: "0 0 10px rgba(0,0,0,0.2)", 
+    },
+  modalProfileImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    marginBottom: 15,
+    borderWidth: 2,
+    borderColor: "orange",
+  },
+  modelName: {
+    color: "white",
+    fontSize: 24,  
+    fontWeight: "bold", 
   },
 });
 
